@@ -109,7 +109,7 @@ int main()
     vector<vector<int>> canvas = rayTrace();
     
     FileManager* fm = new FileManager();
-    fm->WriteToJpegFile("test", WIDTH, HEIGHT, canvas);
+    fm->WriteToJpegFile("raymond", WIDTH, HEIGHT, canvas);
     delete fm;
 
     cout << "Party like it is 1999." << endl;

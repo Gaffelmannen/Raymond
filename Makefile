@@ -31,5 +31,5 @@ $(OBJ_DIR):
 
 all :
 	    $(CC) $(CXXFLAGS) -o $(EXECUTABLE) $(SRC_FILES)
-
+	    @mkdir -p data
    
