@@ -6,27 +6,35 @@
 const int WIDTH = 1280;
 const int HEIGHT = 720;
 
-bool rayHitsSphere(const point3& center, double radius, const Ray& ray)
+double rayHitsSphere(const point3& center, double radius, const Ray& ray)
 {
     Vector3 originOffsetByCenter = ray.getOrigin() - center;
-    auto x = scalarProduct(ray.getDirection(), ray.getDirection());
-    auto y = 2.0 * scalarProduct(originOffsetByCenter, ray.getDirection());
-    auto z = scalarProduct(originOffsetByCenter, originOffsetByCenter) - radius * radius;
-    auto discriminant = y*y - 4 * x * z;
-    return (discriminant > 0);
+    auto x = ray.getDirection().lengthSquared();
+    auto half_of_y = scalarProduct(originOffsetByCenter, ray.getDirection());
+    auto z = originOffsetByCenter.lengthSquared() - radius*radius;
+    auto discriminant = half_of_y * half_of_y - x*z;
+
+    if (discriminant < 0)
+    {
+        return -1.0;
+    }
+    else
+    {
+        return (-half_of_y - sqrt(discriminant)) / x;
+    }
 }
 
 color colorOfTheRay(const Ray& ray)
 {
-    if(rayHitsSphere(point3(0, 0, -1), 0.5, ray))
+    auto t = rayHitsSphere(point3(0, 0, -1), 0.5, ray);
+    if( t > 0.0)
     {
-        return color(0, 1, 0);
+        Vector3 N = unitVector(ray.at(t) - Vector3(0, 0, -1));
+        return 0.5 * color( N.x() + 1, N.y() + 1, N.z() + 1 );
     }
     Vector3 unitDirection = unitVector(ray.getDirection());
-    auto t = 0.5 * (unitDirection.y() + 1.0);
-    return
-        (1.0 - t) * color(1.0, 1.0, 1.0) +
-        t * color(0.5, 0.7, 1.0);
+    t = 0.5 * (unitDirection.y() + 1.0);
+    return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
 }
 
 vector<vector<int>> createCanvas()
