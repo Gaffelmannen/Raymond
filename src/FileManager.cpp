@@ -38,7 +38,7 @@ int FileManager::WriteToPPMFile(
         {
             vector<int> pos = rows[i];
             char fields[100];
-            sprintf(fields, "%i %i %i \n", pos[0], pos[1], pos[2]);
+            snprintf(fields, sizeof(fields), "%i %i %i \n", pos[0], pos[1], pos[2]);
             theImage << fields;
         }
          

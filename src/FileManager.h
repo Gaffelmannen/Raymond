@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <iterator>
 #include <regex>
+#include <stdio.h>
 
 #include "../lib/toojpeg.h"
 
