@@ -145,5 +145,10 @@ inline Vector3 unitVector(Vector3 v)
     return v / v.length();
 }
 
+inline Vector3 operator/(const Vector3& v, double t) 
+{
+    return (1/t) * v;
+}
+
 
 #endif

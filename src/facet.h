@@ -1,7 +1,7 @@
 #ifndef FACET_H
 #define FACET_H
 
-#include "ray.h"
+#include "Ray.h"
 
 struct recordHit
 {

@@ -1,7 +1,11 @@
+#include "rtweekend.h"
+
 #include "FileManager.h"
-#include "Vector3.h"
+
+#include "hittable.h"
+#include "HittableList.h"
+#include "sphere.h"
 #include "Color.h"
-#include "Ray.h"
 
 const int WIDTH = 1280;
 const int HEIGHT = 720;
@@ -24,8 +28,13 @@ double rayHitsSphere(const point3& center, double radius, const Ray& ray)
     }
 }
 
-color colorOfTheRay(const Ray& ray)
+color colorOfTheRay(const Ray& ray, const Hittable& world)
 {
+    HitRecord rec;
+    if (world.hit(ray, 0, infinity, rec)) {
+        return 0.5 * (rec.normal + color(1,1,1));
+    }
+
     auto t = rayHitsSphere(point3(0, 0, -1), 0.5, ray);
     if( t > 0.0)
     {
@@ -84,6 +93,10 @@ vector<vector<int>> rayTrace()
                             vertical/2 -
                             Vector3(0,0,1);
 
+    hittable_list world;
+    world.add(make_shared<Sphere>(point3(0,0,-1), 0.5));
+    world.add(make_shared<Sphere>(point3(0,-100.5,-1), 100));
+
     for (int j = HEIGHT-1; j >= 0; --j)
     {
         cerr << "\rRemaining: ";
@@ -105,7 +118,7 @@ vector<vector<int>> rayTrace()
                 )
             );
 
-            color pixelColor = colorOfTheRay(r);
+            color pixelColor = colorOfTheRay(r, world);
             vector<int> row = c->SetPixelColor(pixelColor);
             canvas.push_back(row);
         }
