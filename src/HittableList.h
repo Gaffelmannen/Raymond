@@ -18,7 +18,8 @@ class hittable_list : public Hittable {
 
     void clear() { objects.clear(); }
 
-    void add(shared_ptr<Hittable> object) {
+    void add(shared_ptr<Hittable> object) 
+    {
         objects.push_back(object);
     }
 
@@ -35,6 +36,24 @@ class hittable_list : public Hittable {
                 hitAnything = true;
                 closestSoFar = temp_rec.t;
                 rec = temp_rec;
+            }
+        }
+
+        return hitAnything;
+    }
+
+    bool hit(const Ray& r, Interval ray_t, HitRecord& rec) const override {
+        HitRecord tempRecord;
+        bool hitAnything = false;
+        auto closest_so_far = ray_t.max;
+
+        for (const auto& object : objects) 
+        {
+            if (object->hit(r, Interval(ray_t.min, closest_so_far), tempRecord)) 
+            {
+                hitAnything = true;
+                closest_so_far = tempRecord.t;
+                rec = tempRecord;
             }
         }
 

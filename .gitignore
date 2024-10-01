@@ -3,6 +3,7 @@ fractals.*/
 data/
 raymond
 raymond.dSYM
+.vscode/
 
 # Prerequisites
 *.d
