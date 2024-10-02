@@ -12,13 +12,14 @@
 class Camera 
 {
     public:
-        double aspectRatio = 1.0;
-        int imageWidth  = 1280;
+        double aspectRatio;
+        int imageWidth;
+        int samplesPerPixel;
 
         void render(const Hittable& world) 
         {
             initialize();
-            createCanvas();
+            createCanvas(world);
 
             vector<vector<int>> canvas = rayTrace();
 
@@ -31,6 +32,7 @@ class Camera
 
     private:
         int imageHeight;
+        double pixelSamplesScale;
         point3 center;
         point3 pixel00Location;
         Vector3 pixelDeltaU;
@@ -40,6 +42,8 @@ class Camera
         {
             imageHeight = int(imageWidth / aspectRatio);
             imageHeight = (imageHeight < 1) ? 1 : imageHeight;
+
+            pixelSamplesScale = 1.0 / samplesPerPixel;
 
             center = point3(0, 0, 0);
 
@@ -99,7 +103,7 @@ class Camera
             return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
         }
 
-        vector<vector<int>> createCanvas()
+        vector<vector<int>> createCanvas(const Hittable &world)
         {
             vector<vector<int>> canvas;
 
@@ -111,8 +115,6 @@ class Camera
 
                 for (int i = 0; i < imageWidth; ++i)
                 {
-                    vector<int> row;
-
                     auto red = double(i) / (imageWidth-1);
                     auto green = double(j) / (imageHeight-1);
                     auto blue = 0.25;
@@ -121,9 +123,22 @@ class Camera
                     int g = static_cast<int>(255.999 * green);
                     int b = static_cast<int>(255.999 * blue);
 
+                    color pixelColor(0,0,0);
+                    for (int sample = 0; sample < samplesPerPixel; sample++) 
+                    {
+                        Ray r = getRay(i, j);
+                        pixelColor += colorOfTheRay(r, world);
+                    }
+
+                    Color c;
+                    vector<int> row = c.SetPixelColorAntialiasing(
+                        pixelSamplesScale * pixelColor
+                    );
+
                     row.push_back(r);
                     row.push_back(g);
                     row.push_back(b);
+
                     canvas.push_back(row);
                 }
             }
@@ -197,6 +212,28 @@ class Camera
             auto a = 0.5*(unit_direction.y() + 1.0);
 
             return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
+        }
+
+        Ray getRay(int i, int j) const 
+        {
+            auto offset = sampleSquare();
+            auto pixel_sample = 
+                pixel00Location + 
+                ((i + offset.x()) * pixelDeltaU)+ 
+                ((j + offset.y()) * pixelDeltaV);
+
+            auto rayOrigin = center;
+            auto rayDirection = pixel_sample - rayOrigin;
+
+            return Ray(rayOrigin, rayDirection);
+        }
+
+        Vector3 sampleSquare() const 
+        {
+            return Vector3(
+                randomDouble() - 0.5, 
+                randomDouble() - 0.5,
+                0);
         }
 };
 
