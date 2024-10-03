@@ -16,6 +16,7 @@ class Camera
         int imageWidth;
         int samplesPerPixel;
         int maxDepth;
+        double reflectance;
 
         void render(const Hittable& world) 
         {
@@ -96,9 +97,8 @@ class Camera
 
             if (world.hit(ray, Interval(0.001, infinity), rec)) 
             {
-                Vector3 direction = randomOnHemisphere(rec.normal);
-                return 0.5 * colorOfTheRay(Ray(rec.p, direction), depth-1, world);
-                //return 0.5 * (rec.normal + color(1,1,1));
+                Vector3 direction = rec.normal + random_unit_vector();
+                return reflectance * colorOfTheRay(Ray(rec.p, direction), depth-1, world);
             }
 
             auto t = rayHitsSphere(point3(0, 0, -1), 0.5, ray);
@@ -207,25 +207,6 @@ class Camera
 
             return canvas;
         }
-
-        /*
-        color colorOfTheRay(const Ray& ray, const Hittable& world) const 
-        {
-            HitRecord rec;
-
-            if (world.hit(ray, Interval(0, infinity), rec)) 
-            {
-                //Vector3 direction = randomOnHemisphere(rec.normal);
-                //return 0.5 * colorOfTheRay(Ray(rec.p, direction), world);
-                return 0.5 * (rec.normal + color(1,1,1));
-            }
-
-            Vector3 unit_direction = unitVector(ray.getDirection());
-            auto a = 0.5*(unit_direction.y() + 1.0);
-
-            return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
-        }
-        */
 
         Ray getRay(int i, int j) const 
         {

@@ -26,6 +26,10 @@ vector<int> Color::SetPixelColorAntialiasing(color pixelColor)
     auto g = pixelColor.y();
     auto b = pixelColor.z();
 
+    r = linearToGamma(r);
+    g = linearToGamma(g);
+    b = linearToGamma(b);
+
     int redByte = int(256 * clamp(r));
     int greenByte = int(256 * clamp(g));
     int blueByte = int(256 * clamp(b));
