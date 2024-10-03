@@ -4,6 +4,8 @@
 #include <cmath>
 #include <iostream>
 
+#include "misc.h"
+
 using std::sqrt;
 using namespace std;    
 
@@ -58,6 +60,16 @@ class Vector3
             e[0] * e[0] +
             e[1] * e[1] +
             e[2] * e[2];
+    }
+
+    static Vector3 random() 
+    {
+        return Vector3(randomDouble(), randomDouble(), randomDouble());
+    }
+
+    static Vector3 random(double min, double max) 
+    {
+        return Vector3(randomDouble(min,max), randomDouble(min,max), randomDouble(min,max));
     }
 };
 
@@ -148,6 +160,32 @@ inline Vector3 unitVector(Vector3 v)
 inline Vector3 operator/(const Vector3& v, double t) 
 {
     return (1/t) * v;
+}
+
+inline Vector3 random_unit_vector() 
+{
+    while (true) 
+    {
+        auto p = Vector3::random(-1, 1);
+        auto lensq = p.lengthSquared();
+        if (1e-160 < lensq && lensq <= 1)
+        {
+            return p / sqrt(lensq);
+        }
+    }
+}
+
+inline Vector3 randomOnHemisphere(const Vector3& normal) 
+{
+    Vector3 on_unit_sphere = random_unit_vector();
+    if (scalarProduct(on_unit_sphere, normal) > 0.0)
+    {
+        return on_unit_sphere;;
+    }
+    else
+    {
+        return -on_unit_sphere;
+    }
 }
 
 

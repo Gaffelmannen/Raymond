@@ -15,13 +15,14 @@ class Camera
         double aspectRatio;
         int imageWidth;
         int samplesPerPixel;
+        int maxDepth;
 
         void render(const Hittable& world) 
         {
             initialize();
             createCanvas(world);
 
-            vector<vector<int>> canvas = rayTrace();
+            vector<vector<int>> canvas = rayTrace(maxDepth);
 
             FileManager* fm = new FileManager();
             fm->WriteToJpegFile("raymond", imageWidth, imageHeight, canvas);
@@ -84,12 +85,20 @@ class Camera
             }
         }
 
-        color colorOfTheRay(const Ray& ray, const Hittable& world)
+        color colorOfTheRay(const Ray& ray, int depth, const Hittable& world)
         {
-            HitRecord rec;
-            if (world.hit(ray, 0, infinity, rec)) 
+            if (depth <= 0)
             {
-                return 0.5 * (rec.normal + color(1,1,1));
+                return color(0,0,0);
+            }
+
+            HitRecord rec;
+
+            if (world.hit(ray, Interval(0.001, infinity), rec)) 
+            {
+                Vector3 direction = randomOnHemisphere(rec.normal);
+                return 0.5 * colorOfTheRay(Ray(rec.p, direction), depth-1, world);
+                //return 0.5 * (rec.normal + color(1,1,1));
             }
 
             auto t = rayHitsSphere(point3(0, 0, -1), 0.5, ray);
@@ -127,7 +136,7 @@ class Camera
                     for (int sample = 0; sample < samplesPerPixel; sample++) 
                     {
                         Ray r = getRay(i, j);
-                        pixelColor += colorOfTheRay(r, world);
+                        pixelColor += colorOfTheRay(r, maxDepth, world);
                     }
 
                     Color c;
@@ -148,7 +157,7 @@ class Camera
             return canvas;
         }
 
-        vector<vector<int>> rayTrace()
+        vector<vector<int>> rayTrace(int depth)
         {
             vector<vector<int>> canvas;
             Color* c = new Color();
@@ -186,7 +195,7 @@ class Camera
                         )
                     );
 
-                    color pixelColor = colorOfTheRay(r, world);
+                    color pixelColor = colorOfTheRay(r, depth-1, world);
                     vector<int> row = c->SetPixelColor(pixelColor);
                     canvas.push_back(row);
                 }
@@ -199,12 +208,15 @@ class Camera
             return canvas;
         }
 
+        /*
         color colorOfTheRay(const Ray& ray, const Hittable& world) const 
         {
             HitRecord rec;
 
             if (world.hit(ray, Interval(0, infinity), rec)) 
             {
+                //Vector3 direction = randomOnHemisphere(rec.normal);
+                //return 0.5 * colorOfTheRay(Ray(rec.p, direction), world);
                 return 0.5 * (rec.normal + color(1,1,1));
             }
 
@@ -213,6 +225,7 @@ class Camera
 
             return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
         }
+        */
 
         Ray getRay(int i, int j) const 
         {
