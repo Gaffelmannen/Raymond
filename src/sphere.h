@@ -1,14 +1,26 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
-#include "facet.h"
 #include "hittable.h"
+#include "facet.h"
+
 
 class Sphere : public Hittable {
     public:
-        Sphere(point3 _center, double _radius) : center(_center), radius(_radius) {}
+        Sphere(point3 _center, double _radius) : center(_center), radius(_radius) 
+        {
 
-        bool hit(const Ray& r, double ray_tmin, double ray_tmax, HitRecord& rec) const override {
+        }
+
+        /*
+        Sphere(const point3& center, double radius) : center(center), radius(std::fmax(0,radius)) 
+        {
+            
+        }
+        */
+
+        bool hit(const Ray& r, double ray_tmin, double ray_tmax, HitRecord& rec) const override 
+        {
             Vector3 oc = r.getOrigin() - center;
             auto a = r.getDirection().lengthSquared();
             auto half_b = scalarProduct(oc, r.getDirection());
@@ -41,7 +53,7 @@ class Sphere : public Hittable {
             return true;
       }
 
-      bool hit(const Ray& r, Interval ray_t, HitRecord& rec) const override 
+        bool hit(const Ray& r, Interval ray_t, HitRecord& rec) const override 
         {
             Vector3 oc = r.getOrigin() - center;
             auto a = r.getDirection().lengthSquared();
@@ -71,6 +83,7 @@ class Sphere : public Hittable {
             rec.normal = (rec.p - center) / radius;
             Vector3 outwardNormal = (rec.p - center) / radius;
             rec.set_face_normal(r, outwardNormal);
+            rec.material = material;
 
             return true;
         }
@@ -78,6 +91,7 @@ class Sphere : public Hittable {
   private:
         point3 center;
         double radius;
+        shared_ptr<Material> material;
 };
 
 #endif

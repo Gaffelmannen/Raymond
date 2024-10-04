@@ -62,6 +62,15 @@ class Vector3
             e[2] * e[2];
     }
 
+    bool nearZero() const 
+    {
+        auto s = 1e-8;
+        return (
+            std::fabs(e[0]) < s) && 
+            (std::fabs(e[1]) < s) && 
+            (std::fabs(e[2]) < s);
+    }
+
     static Vector3 random() 
     {
         return Vector3(randomDouble(), randomDouble(), randomDouble());

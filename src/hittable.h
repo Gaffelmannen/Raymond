@@ -3,6 +3,7 @@
 
 #include "Ray.h"
 #include "Interval.h"
+//#include "Material.h"
 
 class Material;
 
@@ -10,6 +11,7 @@ class HitRecord {
   public:
     point3 p;
     Vector3 normal;
+    shared_ptr<Material> material;
     double t;
 
     bool front_face;
