@@ -197,5 +197,10 @@ inline Vector3 randomOnHemisphere(const Vector3& normal)
     }
 }
 
+inline Vector3 reflect(const Vector3& v, const Vector3& n) 
+{
+    return v - (2 * scalarProduct(v,n) * n );
+}
+
 
 #endif

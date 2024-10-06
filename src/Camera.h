@@ -2,12 +2,22 @@
 #define CAMERA_H
 
 #include "FileManager.h"
+#include "hittable.h"
+#include "HittableList.h"
+#include "Color.h"
+#include "sphere.h"
+#include "Material.h"
 
+
+/*
 #include "hittable.h"
 #include "HittableList.h"
 #include "sphere.h"
+#include "Material.h"
 #include "Color.h"
 #include "misc.h"
+*/
+
 
 class Camera 
 {
@@ -28,7 +38,6 @@ class Camera
             FileManager* fm = new FileManager();
             fm->WriteToJpegFile("raymond", imageWidth, imageHeight, canvas);
             delete fm;
-
             cout << "Party like it is 1999." << endl;
         }
 
@@ -94,11 +103,19 @@ class Camera
             }
 
             HitRecord rec;
-
             if (world.hit(ray, Interval(0.001, infinity), rec)) 
             {
                 Vector3 direction = rec.normal + random_unit_vector();
                 return reflectance * colorOfTheRay(Ray(rec.p, direction), depth-1, world);
+                /*
+                Ray scattered;
+                color attenuation;
+                if (rec.material->scatter(ray, rec, attenuation, scattered))
+                {
+                    return attenuation * colorOfTheRay(scattered, depth - 1, world);
+                }
+                return color(0,0,0);
+                */
             }
 
             auto t = rayHitsSphere(point3(0, 0, -1), 0.5, ray);

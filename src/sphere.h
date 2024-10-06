@@ -12,12 +12,15 @@ class Sphere : public Hittable {
 
         }
 
-        /*
-        Sphere(const point3& center, double radius) : center(center), radius(std::fmax(0,radius)) 
-        {
-            
-        }
-        */
+        Sphere(
+            const point3& center, 
+            double radius, 
+            shared_ptr<Material> mat)
+        : 
+            center(center), 
+            radius(std::fmax(0,radius)),
+            material(mat)
+        {}
 
         bool hit(const Ray& r, double ray_tmin, double ray_tmax, HitRecord& rec) const override 
         {
