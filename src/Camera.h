@@ -8,17 +8,6 @@
 #include "sphere.h"
 #include "Material.h"
 
-
-/*
-#include "hittable.h"
-#include "HittableList.h"
-#include "sphere.h"
-#include "Material.h"
-#include "Color.h"
-#include "misc.h"
-*/
-
-
 class Camera 
 {
     public:
@@ -27,8 +16,11 @@ class Camera
         int samplesPerPixel;
         int maxDepth;
         double reflectance;
+        Hittable& world;
 
-        void render(const Hittable& world) 
+        Camera(Hittable& newWorld) : world(newWorld) {}
+
+        void render() 
         {
             initialize();
             createCanvas(world);
@@ -186,10 +178,6 @@ class Camera
                                     horizontal/2 -
                                     vertical/2 -
                                     Vector3(0,0,1);
-
-            hittable_list world;
-            world.add(make_shared<Sphere>(point3(0,0,-1), 0.5));
-            world.add(make_shared<Sphere>(point3(0,-100.5,-1), 100));
 
             for (int j = imageHeight-1; j >= 0; --j)
             {
